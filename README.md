@@ -6,7 +6,8 @@ Original RISC OS serial driver sources by Hugo Fiennes, recovered from an Acorn 
 | --- | --- | --- |
 | [Internal](Internal.bas.txt) | Internal serial port, Acorn and PC wiring variants | 1.20, 2 October 1996 |
 | [Dummy](Dummy.bas.txt) | Null serial device | 1.02, 16 August 1994 |
-| [SP_Dual](SP_Dual.bas.txt) | Block-driver interface to Serial Port / Atomwide 1/2/3-port cards, Acorn and PC cable variants | 1.14, 9 January 1997 |
+| [SP_Dual](SP_Dual.bas.txt) | Block-driver interface to Serial Port / Atomwide 1/2/3-port cards, Acorn cable wiring | 1.14, 9 January 1997 |
+| [SP_DualPC](SP_Dual.bas.txt#L35) | The same cards with PC cable wiring; built by the second pass of the shared SP_Dual source | 1.14, 9 January 1997 |
 | [Serial](Serial.bas.txt) | Underlying serial-card hardware module, including Atomwide issue 1/2 cards | 0.55, 10 August 1998 |
 
 The BASIC programs contain inline ARM assembler and save their own assembled outputs. `Serial` supplies the `SPSerial_*` SWIs used by `SP_Dual`; it is a separate hardware module, rather than another block driver.
@@ -22,6 +23,12 @@ The BASIC programs contain inline ARM assembler and save their own assembled out
 - [`provenance.json`](provenance.json): original paths, load/execute addresses, attributes, lengths and SHA-256 hashes for every preserved original file.
 
 The comma suffix records the RISC OS filetype: `ffb` BASIC, `ffa` Module, `ffd` Data, `feb` Obey, `ff9` Sprite, `fff` Text. Restore these filetypes and remove the suffixes when transferring to RISC OS if your transfer tool does not do so automatically. In particular, the application must contain files named `!Boot`, `!Run` and `!Sprites` on RISC OS.
+
+## SP_DualPC
+
+The PC cable variant is included at [`!SerialDev/Modules/SP_DualPC/Driver,ffd`](!SerialDev/Modules/SP_DualPC/Driver,ffd). Its original source is `SP_Dual,ffb`, with the readable listing in [SP_Dual.bas.txt](SP_Dual.bas.txt). Running that source builds both SP_Dual and SP_DualPC; there is no separate SP_DualPC source file in this recovered set.
+
+The second assembly pass sets `initbitset=%00101011` and the title to `1/2/3 port serial (PC cable)`, then saves the SP_DualPC driver. The Acorn cable pass uses `%10101011`. Both report the same underlying device number, allowing applications using different cable variants to recognise the same hardware.
 
 ## Binary provenance
 
