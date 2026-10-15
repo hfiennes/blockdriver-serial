@@ -1,0 +1,32 @@
+/* Maximum driver length - 4k */
+int driver_block[1024];
+
+/* The correct driver load prototype so that C doesn't moan */
+extern int (*driver_load(char*))(int,...);
+
+/*
+   Use driver_init() to build driver list - you can use the text
+   to build a driver menu if you want. Note that the #defines
+   in the driver.h file assume a global int 'portnumber' which
+   defines the current port. You could always alter the defines
+   accordingly if you want to pass the portnumber yourself.
+
+   Load a driver like this:
+
+   if ((driver=driver_load("internal"))==NULL)
+     {
+     error - can't load driver
+     }
+
+   driver_initialise();
+
+   You can call the driver either with the defined methods or
+   eg: (*driver)(DRIVER_functioncode,portnumber,data,...)
+
+   All the driver functions return in r0, hence are accessible
+   by C.
+
+   You may want to munge the driver_load, eg to load to malloc'ed
+   buffer space or similar - feel free. This is just an example.
+
+   */

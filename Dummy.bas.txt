@@ -1,0 +1,173 @@
+10REM >Dummy
+20*|
+30*| Alternative block driver specification
+40*|
+50*| Dummy serial driver
+60*|
+70*| Version 1.02 16-August-1994 Hugo Fiennes
+80*|
+90DIM code 8192
+100
+110date$=MID$(TIME$,5,11):z$=CHR$0
+120FORI%=0TO8192STEP4:code!I%=0:NEXT
+130
+140InsV=&14
+150RemV=&15
+160CnpV=&16
+170
+180V=1<<28
+190C=1<<29
+200Z=1<<30
+210N=1<<31
+220
+230driver_number       = 255
+240
+250flag_morethanone    = &00000001
+260flag_splitrates     = &00000002
+270flag_hardwarefifo   = &00000004
+280flag_controlbreak   = &00000008
+290flag_requirespoll   = &00000010
+300flag_supportsblock  = &00000040
+310
+320FORpass=0TO2STEP2
+330P%=code
+340[OPT pass
+350.entry
+360      cmp     r0,#((endoftable-table)/4)
+370      addcc   pc,pc,r0,lsl#2
+380      movs    pc,r14
+390
+400.table
+410      bal     put_byte
+420      bal     get_byte
+430      bal     put_block
+440      bal     get_block
+450      bal     check_tx
+460      bal     check_rx
+470      bal     flush_tx
+480      bal     flush_rx
+490      bal     control_lines
+500      bal     read_modem_control
+510      bal     read_rx_errors
+520      bal     send_break
+530      bal     examine_byte
+540      bal     tx_speed
+550      bal     rx_speed
+560      bal     wordformat
+570      bal     flowcontrol
+580      bal     initialise
+590      bal     closedown
+600      movs    pc,r14            ; Poll
+610.endoftable
+620
+630      FNcheck_and_set(&80)
+640.driverinfo
+650      equs    "Dummy /dev/null"+z$
+660
+670      FNcheck_and_set(&A0)
+680.manufacturerinfo
+690      equs    "The Serial Port"+z$
+700
+710      FNcheck_and_set(&C0)
+720.version
+730      equd    &00010002         ; v1.02
+740.flags
+750      equd    0
+760.drivernumber
+770      equd    driver_number<<8
+780
+790      FNcheck_and_set(&100)
+800.speeds
+810      equd    19200
+820      equd        0
+830
+840      FNcheck_and_set(&180)
+850;--- Put byte routine ---------------------------------------------------
+860.put_byte
+870      mov     r0,#0
+880      movs    pc,r14
+890
+900;--- Get byte routine ---------------------------------------------------
+910.get_byte
+920      mvn     r0,#0
+930      movs    pc,r14
+940
+950;--- Put block ----------------------------------------------------------
+960.put_block
+970      movs    pc,r14
+980
+990;--- Get block ----------------------------------------------------------
+1000.get_block
+1010      movs    pc,r14
+1020
+1030;--- Check TX buffer ----------------------------------------------------
+1040.check_tx
+1050      mov     r0,#1
+1060      movs    pc,r14
+1070
+1080;--- Check RX buffer ----------------------------------------------------
+1090.check_rx
+1100      mov     r0,#0
+1110      movs    pc,r14
+1120
+1130;--- Flush TX buffer ----------------------------------------------------
+1140.flush_tx
+1150      movs    pc,r14
+1160
+1170;--- Flush RX buffer ----------------------------------------------------
+1180.flush_rx
+1190      movs    pc,r14
+1200
+1210;--- Control lines ------------------------------------------------------
+1220.control_lines
+1230      mov     r0,#%11
+1240      movs    pc,r14
+1250
+1260;--- Read modem control lines -------------------------------------------
+1270.read_modem_control
+1280      mov     r0,#%1011
+1290      movs    pc,r14
+1300
+1310;--- Read RX errors -----------------------------------------------------
+1320.read_rx_errors
+1330      mov     r0,#0
+1340      movs    pc,r14
+1350
+1360;--- Send break ---------------------------------------------------------
+1370.send_break
+1380      movs    pc,r14
+1390
+1400;--- Examine byte -------------------------------------------------------
+1410.examine_byte
+1420      mvn     r0,#0
+1430      movs    pc,r14
+1440
+1450;--- Set speed ----------------------------------------------------------
+1460.tx_speed
+1470.rx_speed
+1480      mov     r0,#19200
+1490      movs    pc,r14
+1500
+1510;--- Set word format ----------------------------------------------------
+1520.wordformat
+1530      mov     r0,#0
+1540      movs    pc,r14
+1550
+1560;--- Set flow control ---------------------------------------------------
+1570.flowcontrol
+1580      movs    pc,r14
+1590
+1600;--- Initialise driver --------------------------------------------------
+1610.initialise
+1620      mov     r0,#0    ; report no error on boot
+1630      movs    pc,r14
+1640
+1650;--- Close down driver --------------------------------------------------
+1660.closedown
+1670      movs    pc,r14
+1680]
+1690NEXT
+1700SYS"OS_File",10,"SerialDev:Modules.Dummy.Driver",&FFD,,code,P%
+1710SYS"OS_File",10,"spec.!serialdev.Modules.Dummy.Driver",&FFD,,code,P%
+1720END
+1730DEFFNcheck_and_set(A%):IF (P%-code)>A% ERROR 1,"Block &"+STR$~A%+" exceeded"::=0ELSEP%=code+A%:=0

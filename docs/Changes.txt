@@ -1,0 +1,72 @@
+REVISION 4 : Added 'wont empty' and 'dont overlay io' flags for pipes and
+             (unfixed) RO3.10 serial ports.
+
+REVISION 5 : Initialise can now return an error string.
+
+REVISION 6 : More information on calling initialise.
+
+REVISION 7 : Pipe drivers now support 'peek byte' - return next byte in buffer
+             without removing it.
+
+REVISION 8 : Internal port with PC cable now works with DCD low (bit 1 on
+             SerialOp 0 now set). OSBYTE 152 used for peek byte (for some
+             reason the proper legal method doesn't work well).
+
+REVISION 9 : All drivers must now store R14 on the stack so they can be called
+             from supervisor mode.
+
+REVISION 10: Basically this release just tidied the internal driver for RiscPC
+             use - hitting the metal isn't required anymore to set high rates,
+             so it isn't done. Still needed on A5000, A3010, A3020, A4000 & A4
+             though.
+
+             Inquiry initialise (see below) added for JP :-) This is
+             implemented in Internal, SP_Dual and Pipe drivers. It's only
+             really necessary in the Internal (sets baud tables) and the
+             SP_Dual (counts installed ports) drivers.
+
+REVISION 10a:"I must not release software without testing it" :-)
+             A little buglet in the SP_Dual drivers was pointed out to me,
+             "they don't work!". This has now been fixed. Drivers should now
+             also preserve the PSR (Internal, Dummy, Pipe, and SP_Dual do)
+             just in case.
+
+REVISION 11: Internal drivers:
+               Supervisor mode fixes by Tom Hughes (for Freenet to work!)
+               incorporated in this release.
+
+               Mod to flow control threshold setting suggested by Andrew
+               Sellors implemented.
+
+             SP_Dual drivers:
+               Inquiry initialise will now return error if no card installed.
+
+               Workaround for bug in DS firmware when block ops want to
+               transfer 0 bytes implemented. [James Miller]
+
+REVISION 11a: SP_Dual drivers:
+               These now use the _Info swi to find info on max speed that
+               is supported by the card, or find it by other means. Changes
+               to driver text to indicate that they support the new 1/2/3
+               port cards from Atomwide now too.
+               
+REVISION 11b: SP_Dual drivers:
+               SendBreak entry now works! I'd forgotten totally about it.
+               May require serialdriver 0.49 or later to work.
+               
+REVISION 12: Internal drivers:
+               More supervisor mode fixes - hopefully, all entry points in
+               internal/internalpc can now be called from SVC mode as well
+               as user mode without fear of junking the processor mode.
+               
+             II_Dual/Internal2 drivers:
+               These have been removed from the distribution as Intelligent
+               Interfaces now have both a version 3 firmware for the old dual
+               serial card and a new serial card, both of which come with
+               block drivers written by themselves - the drivers included here
+               were unsuitable for the new firmware.
+               
+             The PC cable variants of the drivers now have the same driver
+             number as the Acorn cable drivers to avoid problems with one
+             program claiming one device number when another program is
+             currently using the alternative wiring version.

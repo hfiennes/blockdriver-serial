@@ -1,0 +1,14 @@
+Driver numbers
+--------------
+
+  0 - Internal serial
+  1 - II dual serial
+  2 - Serial port dual serial
+  3 - Internal serial with PC cable
+  4 - Brainsoft Multipod (Kelvin Hill, #179 on Cryton)
+  5 - Acorn telnet interface
+  6 - Serial port dual serial with PC cable
+  7 - ISAdapter COM ports
+100 - Remote econet driver
+128 - Virtual pipe (end A)
+129 - Virtual pipe (end B)

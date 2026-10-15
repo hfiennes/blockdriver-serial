@@ -1,0 +1,18 @@
+Hardcoded Serial Modules
+------------------------
+
+These modules are hardcoded to work with a card in a specific slot: this is to
+enable cards which don't agree with the host machine (eg: old serial port issue
+1 or 2 serial cards in a RiscPC) to be used. It may be necessary to remove the
+ROM from the card to make the machine boot. To use, simply load the appropriate
+module in your boot sequence (put it in !Boot.Choices.Boot.Predesk folder).
+
+Serial port issue 1 card (Natsemi 16C552, 44 pin PLCC)   Iss1_SlotX
+Serial port issue 2/3 card (Exar 16C552, 68 pin PLCC)	 Iss2_SlotX
+
+Atomwide issue 1/2 cards work fine in RiscPCs already, so modules for these
+cards are not supplied.
+
+Hugo Fiennes, The Serial Port
+altman@cryton.demon.co.uk
+16-February-1996

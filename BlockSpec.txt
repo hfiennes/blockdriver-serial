@@ -1,0 +1,537 @@
+Block Driver Specification                 Hugo Fiennes, Rev 12, 11th June 1996
+-------------------------------------------------------------------------------
+
+Contact me as 'altman@cryton.demon.co.uk', for information about the latest
+version of the spec.
+
+ARCterm 7 users - please see the notes on release 12 at the end of this
+document before installing the drivers.
+
+
+Aim
+-------------------------------------------------------------------------------
+To provide a standard way for applications to access serial devices. Any
+application supporting block drivers can be used with many serial devices, with
+no modification required to the application code - and it's easier to use than
+the serial SWIs anyway!
+
+
+Info
+-------------------------------------------------------------------------------
+This standard is public domain - the drivers supplied are freely distributable.
+
+If you intend to use the block drivers, please distribute the whole block
+driver package (inc sample source, this file, and the complete !SerialDev
+application) with your program, making sure that you are distributing the
+latest version (available from ftp.demon.co.uk in the /pub/archimedes
+directory).
+
+An application called !SerialDev holds the drivers - in your application !Run
+sequence you should check to see if <SerialDev$Path> is set, and if not, set it
+to your application directory, inside which is Modules.Internal at least, for
+your application to default to the internal port.
+
+Eventually the idea is to have !SerialDev hold an application that handles the
+installation in a 'pretty way' - eg dragging new drivers to a window to install
+them, this would check to see if the driver was a later version of an existing
+driver and if so replace the old one, otherwise it would install the driver.
+Maybe this application could look a bit like ArtWorks !FontInst. Hint, hint,
+somebody write one...
+
+The drivers each have their own directory just in case, possibly extensions
+with !Run files, modules, etc relating to the driver could be stored there.
+Of course, drivers know their own name and could load files into RMA on
+initialisation now and cause no problems.
+
+ARCterm 7 1.44 and later use drivers of this specification. In this archive I
+have included some other drivers, documented below. Other programs that support
+block drivers are: Binkleyterm (2.11+), Hearsay 2 (2.17+), ARCfax (1.06+),
+ARCbbs (1.63+), RISCbbs (1.02+), Netway, KA9Q/!TCPIP, Freenet, Acorn's PPP.
+
+
+Calling drivers
+-------------------------------------------------------------------------------
+The drivers can be called in USR or SVC mode, and will use/corrupt r0-r3.
+All functions that return data do so in R0 for compatibility with C programs.
+Parameters to all functions go in via r0-r3.
+
+The functions are called simply by branching to the start of the driver that
+has been loaded with the registers set up and a return address (in R14) set
+up correctly (remember - if you're calling from SVC mode, R14 must also
+include the correct CPU mode).
+
+The first function that should be called after loading a driver (before even
+reading baudrate tables) is the initialise entry, which may fix up tables
+and other data depending on hardware capabilities.
+
+An example program in BASIC and C is provided with the distribution for you to
+look at.
+
+Function codes - Summary
+------------------------
+r0=0    Put byte
+r0=1    Get byte
+r0=2    Put block
+r0=3    Get block
+r0=4    Check TX buffer
+r0=5    Check RX buffer
+r0=6    Flush TX buffer (and hardware FIFO if applicable)
+r0=7    Flush RX buffer (and hardware FIFO if applicable)
+r0=8    Control lines  R/W
+r0=9    Read modem control lines
+r0=10   Read RX errors
+r0=11   Send break
+r0=12   Examine byte (like Get byte but leaves it in the buffer)
+r0=13   TX Speed  R/W
+r0=14   RX Speed  R/W
+r0=15   Set word format   R/W
+r0=16   Set flow control  R/W
+r0=17   Initialise driver
+r0=18   Close down driver
+r0=19   Poll driver
+
+Function codes - Description
+----------------------------
+
+r0=0  Put byte
+      --------
+      r1=port number
+      r2=byte to send
+
+      Returns with r0=-1 if byte not inserted, r0=0 if byte inserted into
+      TX queue.
+
+r0=1  Get byte
+      --------
+      r1=port number
+
+      Returns with r0=-1 if no byte available, r0=byte if a byte was removed.
+
+r0=2  Put block
+      ---------
+      r1=port number
+      r2=pointer to block
+      r3=number of bytes to try and insert
+
+      Returns with r0=number of bytes successfully inserted.
+
+r0=3  Get block
+      ---------
+      r1=port number
+      r2=pointer to block
+      r3=maximum number of bytes to put into buffer
+
+      Returns with r0=number of bytes put in buffer.
+
+r0=4  Check TX buffer
+      ---------------
+      r1=port number
+
+      Returns with r0=number of bytes free in TX buffer
+
+r0=5  Check RX buffer
+      ---------------
+      r1=port number
+
+      Returns with r0=number of bytes used in RX buffer
+
+r0=6  Flush TX buffer (and hardware FIFO if applicable)
+      ---------------
+      r1=port number
+
+r0=7  Flush RX buffer (and hardware FIFO if applicable)
+      ---------------
+      r1=port number
+
+r0=8  Control lines  R/W
+      ------------------
+      r1=port number
+      r2=-1 to read or new settings
+
+      Returns r0=control line settings
+
+      b0=DTR
+      b1=RTS
+      b2=If set, set TX data active (ie break state)
+
+r0=9  Read modem control lines
+      ------------------------
+      r1=port number
+
+      Returns r0=control line status
+
+      b0=CTS
+      b1=DSR
+      b2=RI
+      b3=DCD
+
+r0=10 Read RX errors
+      --------------
+      r1=port number
+
+      Returns r0=bitset of errors seen since last read RX errors.
+
+      b0=Overrun error
+      b1=Parity error
+      b2=Framing error
+      b3=Break received
+
+r0=11 Send break
+      ----------
+      r1=port number
+      r2=break time (in centiseconds)
+
+      This does not return until the break has been sent - although some
+      serial ports could multitask when sending a break, the internal port
+      can't. Check the driver flags to see if you can use a multitasking
+      break before using this call.
+
+r0=12 Examine byte (like Get byte but leaves it in the buffer)
+      ------------
+      r1=port number
+
+      Returns with r0=-1 if no byte available, r0=byte if a byte was
+      returned.
+
+r0=13 TX Speed R/W
+      ------------
+      r1=port number
+      r2=speed to set or -1 to read
+
+      Returns with r0=speed.
+
+r0=14 RX Speed R/W
+      ------------
+      r1=port number
+      r2=speed to set or -1 to read
+
+      Returns with r0=speed.
+
+r0=15 Set word format R/W
+      -------------------
+      r1=port number
+      r2=word format to set or -1 to read
+
+      Returns with r0=word format.
+
+r0=16 Set flow control R/W
+      --------------------
+      r1=port number
+      r2=flow control method to set or -1 to read
+
+      Returns with r0=method
+
+      0=no flow control
+      1=hardware
+      2=xon/xoff
+      3=both
+
+r0=17 Initialise driver
+      -----------------
+      r1=port number
+      r2=parameter string (optional)
+
+      r2 optionally points to a null terminated string which can specify
+      device options.
+
+      Returns with r0 pointing to error string if
+      initialisation unsuccessful, otherwise r0=0.
+
+      NOTE! Do not read the baud rate tables or driver flags UNTIL AFTER
+      the initialise driver entry has been called. This allows for drivers
+      to configure themselves to the available hardware and adjust the
+      services offered accordingly.
+
+      Release 10: There is now a flag, 'supports inquiry initialise' (see
+      above) which allows you to call the initialise entry with r1=-1,
+      which will not touch any hardware, just set all the baud tables,
+      driver flags, and count the number of ports installed (if necessary),
+      so you can read them and set up menus, etc.
+
+r0=18 Close down driver
+      -----------------
+      r1=port number
+
+r0=19 Poll driver
+      -----------
+      r1=port number
+
+      This should be called regularly (eg in a polling loop) for the driver
+      to perform polling tasks - eg the econet driver needs to check internal
+      buffers and poll econet protocol tasks. Polls can be as infrequent as
+      three or four times a second : if a driver needs polling more often
+      than that, it should install a module and hook onto a vector somewhere.
+
+
+Driver layout
+-------------------------------------------------------------------------------
+
+0x000 Entry point to call routines
+
+      In:  r0=function code
+           r1-r3=data
+
+      Out: r0=result
+
+      NOTE! CHANGE IN REVISION 9!
+      |
+      | This entry point can be called in EITHER user or supervisor mode, so
+      | R14 should always be pushed on the stack (STMFD R13!,{R14}) and be used
+      | to return from the driver so that r14_svc is preserved if the driver is
+      | called when in supervisor mode.
+      |
+
+      r0-r3 can be corrupted, r4-r12 should be preserved. r14 contains the
+      return address
+
+      Callers note that r13 should point to a full, descending stack
+      with a decent amount of space free on it.
+
+      Example handler code follows:
+
+      entry
+            STMFD R13!,{R14}
+            CMP   R0,#((endoftable-table)/4)
+            ADDCC PC,PC,R0,LSL#2
+            LDMFD R13!,{PC}^
+
+      table
+            B     func_0
+            B     func_1
+      endtable
+
+0x080 Driver information string (31 bytes max, 0 terminated)
+0x0A0 Manufacturer information string (31 bytes max, 0 terminated)
+0x0C0 Version number (top 16 bits major, low 16 bits minor)
+0x0C4 Driver flags
+
+      0x00000001 - More than one port available
+      0x00000002 - Supports split rates
+      0x00000004 - Has >1 byte hardware FIFO
+      0x00000008 - Can use Set control lines to generate a break
+      0x00000010 - Requires polling (by function 19)
+      0x00000020 - Won't empty (is a shared buffer)
+      0x00000040 - Supports block get/put operations
+      0x00000080 - Prefer not to overlap serial IO and disk IO
+      0x00000100 - Supports inquiry initialise
+
+      0xdd...... - Top byte is highest port number supported (numbered from 0)
+      
+0x0C8 Driver number. This is allocated by me, and always has the lowest byte
+      as 0. The purpose of the driver number is for the Device_Claim protocol:
+      when a serial port is specified, the port number is used to specify
+      which port is to be claimed/released. The internal port is port 0 and
+      driver number 0. To make the port number to use you add the sub-port
+      number and the driver number together. eg, say the II dual card was
+      driver number 1 (0x00000100) and you wanted to claim port 5, you
+      would use the port number 0x00000105. This is unique and hopefully
+      would cause no problems.
+
+      PORT NUMBERS PASSED TO BLOCK DRIVERS ARE THE LOWER 8 BITS ONLY: THEY DO
+      NOT INCLUDE THE DRIVER NUMBER.
+
+      Currently allocated driver numbers:
+
+        0 - Internal serial (Acorn or PC cable)
+        1 - II dual serial
+        2 - Serial port dual serial (Acorn or PC cable)
+        3 - USED TO BE 'Internal serial with PC cable' - This is now ID 0
+        4 - Brainsoft Multipod (Kelvin Hill, #179 on Cryton)
+        5 - Acorn telnet interface
+        6 - USED TO BE 'Serial port dual serial with PC cable' - Thisis now ID 2
+        7 - II dual serial with PC cable
+       64 - VoiceWorks driver (voice modems) - steve@the23rdhour.demon.co.uk
+
+      100 - Remote econet driver
+      128 - Virtual pipe (end A)
+      129 - Virtual pipe (end B)
+
+0x0CC - 0x0FF reserved
+
+0x100 Supported speed table. One word per speed, terminated with a null word.
+
+0x180-> driver code.
+
+0xFFF End of driver - size is limited to 4k. You can always load utilities,
+      additional code, etc, from your driver directory (as the pipe module
+      does).
+      
+
+Notes on each driver
+-------------------------------------------------------------------------------
+
+Internal driver
+---------------
+There are two version of this: Internal and InternalPC - the PC version
+expects a standard PC serial cable, which will only work properly on A5000
+or later machines (some early A5000s might have problems too).
+
+Needs RO3.1 or later for block operations.
+
+On A3010, A3020, A4000, A5000, and A4 the driver will offer 38400, 57600, and
+115200 automatically. Remember that these rates may well not be reliable
+due to the lack of FIFO on the serial chip. These rates are achieved by
+writing directly to the serial chip, which is definitely not Acorn-approved.
+Beware!
+
+On RiscPCs all rates to 115200 should be perfectly reliable as the hardware
+now includes a FIFO.
+
+Cables - the Acorn wiring for a modem is this:
+
+   Acorn 9w female               Modem 25w male
+   ---------------               --------------
+       1-4-8                           20
+         2                              3
+         3                              2
+         5                              7
+         6                              5
+         7                              4
+         9                              8
+
+And the PC wiring is this:
+
+   Acorn 9w female               Modem 25w male
+   ---------------               --------------
+         1                              8
+         2                              3
+         3                              2
+         4                             20
+         5                              7
+         6                              6 (not usually used much)
+         7                              4
+         8                              5
+         9                             22 (not usually used much)
+
+Serial Port Dual (/Multiport) Serial
+------------------------------------
+Again, there are 2 versions: SP_Dual and SP_DualPC, the PC version expects
+a standard PC serial cable.
+
+Since release 9, the Xon/Xoff flags are cleared every time flow control
+is changed to stop things sticking if an Xoff has been received.
+
+These drivers support both the old issue 1/2/3 Dual Serial cards from The
+Serial Port and also the replacement cards (from Atomwide) which are available
+in 1, 2 and 3 port variants.
+
+PipeA and PipeB
+---------------
+This will autoload the ARCbbs_Pipes module (contained in the PipeA directory)
+if necessary.
+
+The idea is, you open a port (0-15) on pipeA and data sent appears in the
+input of the corresponding port on pipeB (and vice-versa). DTR at one end
+is translated to DCD at the other (ditto for RTS-CTS). In this way, any
+application which supports the block driver spec can talk to another, for
+example, with ARCbbs and the ARCterm modem server on the same machine,
+some ARCbbs ports could be given over to network access via the modem
+server.
+
+The pipes use the flag 'wont empty' as you can't wait for the pipe to
+'finish sending' as the other end of the pipe may be waiting for the same
+thing (unlike a serial port, where the data will go away eventually).
+
+The pipes are 2k long in each direction.
+
+Acorn Telnet (Needs Acorn's TCP/IP protocol suite)
+------------
+*Note! Does not store R14_SVC
+
+This is only in testing, but is supplied as it might be useful. The coding
+is possibly quite inefficient, but it works. You require !Internet and 
+!Telnet to have been run before trying to use the driver. It will prompt
+for a host name - type one, or an internet address. You can add ',xx'
+where xx is the port number to telnet into. DCD as reported by modem
+status will go high when a successful connection is made. Dropping DTR
+then raising it again will clear any current call.
+
+Known bugs: You can't have multiple sessions - if you load another emulator
+and run telnet the port_claim message will stop the first one - possibly a
+'dynamic' port number (returned by init?) should be put into the spec to
+cater for things like this.
+
+Dummy (/dev/null)
+-----
+This is a dummy driver, for when you want somewhere to trash data. It
+always shows CTS, DSR and DCD, and will completely ignore any data you
+send to it. It never has any data to give you.
+
+Econet driver (not supplied with this release)
+-------------
+This works with ARCterm's new 16-line modem server to allow remote serial
+access. To support connection, etc, it has 3 special functions:
+
+Connect (function code 128)
+  r1=handle/net/station (handle in bits 16-23,net in bits 8-15, station in 0-7)
+  r2-> password, null terminated
+
+  Tries to set up a connection with the modem server. Returns 0 for success,
+  1 for no reply, 2 for already connected, or a pointer to an error block if
+  r0 is 'big' on return.
+
+Disconnect (function code 129)
+  Disconnects from the modem server.
+
+Scan for modem servers (function code 130)
+  r1=buffer to fill of format:
+     0    station
+     1    net
+     2    handle
+     3    modem driver number as defined in the modem server config file
+     4-63 modem ID string (null terminated)
+  r2=max number of entries table can handle
+
+
+Recent Changes
+-------------------------------------------------------------------------------
+REVISION 11: Internal drivers:
+               Supervisor mode fixes by Tom Hughes (for Freenet to work!)
+               incorporated in this release.
+
+               Mod to flow control threshold setting suggested by Andrew
+               Sellors implemented.
+
+             SP_Dual drivers:
+               Inquiry initialise will now return error if no card installed.
+
+               Workaround for bug in DS firmware when block ops want to
+               transfer 0 bytes implemented. [James Miller]
+
+REVISION 11a: SP_Dual drivers:
+               These now use the _Info swi to find info on max speed that
+               is supported by the card, or find it by other means. Changes
+               to driver text to indicate that they support the new 1/2/3
+               port cards from Atomwide now too.
+               
+REVISION 11b: SP_Dual drivers:
+               SendBreak entry now works! I'd forgotten totally about it.
+               May require serialdriver 0.49 or later to work.
+               
+REVISION 12: Internal drivers:
+               More supervisor mode fixes - hopefully, all entry points in
+               internal/internalpc can now be called from SVC mode as well
+               as user mode without fear of junking the processor mode.
+               
+             II_Dual/Internal2 drivers:
+               These have been removed from the distribution as Intelligent
+               Interfaces now have both a version 3 firmware for the old dual
+               serial card and a new serial card, both of which come with
+               block drivers written by themselves - the drivers included here
+               were unsuitable for the new firmware.
+               
+             The PC cable variants of the drivers now have the same driver
+             number as the Acorn cable drivers to avoid problems with one
+             program claiming one device number when another program is
+             currently using the alternative wiring version.
+             
+             Internal port block put's now send one byte with a standard
+             serialop, then the rest via block op to ensure that the
+             transmission starts (buggy OS report from David Pilling).
+             
+             ARCterm 7 users! Due to a change by public demand to make the
+             driver numbers the same for different drivers (ie Acorn/PC cables)
+             ARCterm can behave strangely when selecting drivers - ARCterm
+             works on driver number, not driver name. ARCterm 1.48, available
+             from Atomwide, fixes this problem (there are no other changes
+             since 1.46, apart from RO3.6 compatibility, however).

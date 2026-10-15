@@ -1,0 +1,18 @@
+*,ffb binary
+*,ffa binary
+*,ffd binary
+*,ff9 binary
+*.bas.txt text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+provenance.json text eol=lf
+# Preserve all other recovered files exactly, including historical encodings.
+*,feb -text
+*,fff -text
+BlockSpec.txt -text
+docs/*.txt -text
+# Historical source whitespace is intentionally preserved.
+*.bas.txt -whitespace
+BlockSpec.txt -whitespace
+docs/*.txt -whitespace
+*,fff -whitespace

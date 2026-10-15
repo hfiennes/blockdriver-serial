@@ -1,0 +1,402 @@
+[
+  {
+    "file": "Internal,ffb",
+    "original_path": "$/Cdev/Seven/Driver/Internal",
+    "filetype": "ffb",
+    "load": "fffffb47",
+    "exec": "16eabaae",
+    "attributes": 3,
+    "size": 20767,
+    "sha256": "cdcdc56b52c714132bc2a828e3f94092c049e2b3aa095275cac3d47b21a944c2"
+  },
+  {
+    "file": "Dummy,ffb",
+    "original_path": "$/Cdev/Seven/Driver/Dummy",
+    "filetype": "ffb",
+    "load": "fffffb45",
+    "exec": "8697da24",
+    "attributes": 3,
+    "size": 4489,
+    "sha256": "43d11890ec84b67f642c856b8022a9bff3c9a94a0020313a032f5f5de7bc4e10"
+  },
+  {
+    "file": "SP_Dual,ffb",
+    "original_path": "$/Cdev/Seven/Driver/SP_Dual",
+    "filetype": "ffb",
+    "load": "fffffb47",
+    "exec": "49fefa33",
+    "attributes": 3,
+    "size": 10512,
+    "sha256": "d7a84d9a7227c67cfc4e927ffbd279469118fc2f988c1063b6d68be787baeab1"
+  },
+  {
+    "file": "Serial,ffb",
+    "original_path": "$/Projects/Serial/Serial",
+    "filetype": "ffb",
+    "load": "fffffb48",
+    "exec": "7362c718",
+    "attributes": 3,
+    "size": 90226,
+    "sha256": "d7ac1448560e5d6f77b003b460554cf8b7941da12bce81b347e2cadb8b830938"
+  },
+  {
+    "file": "!SerialDev/!Boot,feb",
+    "original_path": "$/Cdev/Seven/!SerialDev/!Boot",
+    "filetype": "feb",
+    "load": "ffffeb44",
+    "exec": "41a1ac65",
+    "attributes": 3,
+    "size": 95,
+    "sha256": "537a17dd5f5685853514cf01d047d94c04910fd906253047dc232732be2e3bf2"
+  },
+  {
+    "file": "!SerialDev/!Run,feb",
+    "original_path": "$/Cdev/Seven/!SerialDev/!Run",
+    "filetype": "feb",
+    "load": "ffffeb44",
+    "exec": "41a1b0cb",
+    "attributes": 3,
+    "size": 63,
+    "sha256": "9ec7ce5cfc2ff7883934a44b6c4edf75d0a951481b412c9aa2681d4d33c34f1c"
+  },
+  {
+    "file": "!SerialDev/!Sprites,ff9",
+    "original_path": "$/Cdev/Seven/!SerialDev/!Sprites",
+    "filetype": "ff9",
+    "load": "fffff944",
+    "exec": "41a1a740",
+    "attributes": 3,
+    "size": 864,
+    "sha256": "012e45587462eb7e5c75484a01ede5aa1399ca51ab1d1d639a8ebfa204c48cdf"
+  },
+  {
+    "file": "!SerialDev/Modules/Internal/Driver,ffd",
+    "original_path": "$/Cdev/Seven/!SerialDev/Modules/Internal/Driver",
+    "filetype": "ffd",
+    "load": "fffffd47",
+    "exec": "16eabc2d",
+    "attributes": 3,
+    "size": 1984,
+    "sha256": "2a6549c13ffaa224e566a162c6a9145f7a7f20bfa261408670e9091602489d3f"
+  },
+  {
+    "file": "!SerialDev/Modules/InternalPC/Driver,ffd",
+    "original_path": "$/Cdev/Seven/!SerialDev/Modules/InternalPC/Driver",
+    "filetype": "ffd",
+    "load": "fffffd47",
+    "exec": "16eabc51",
+    "attributes": 3,
+    "size": 2012,
+    "sha256": "709273c968f29d5c621d3d13917b3c27fc0e534fd42f53f9b4ba1df8b29e971d"
+  },
+  {
+    "file": "!SerialDev/Modules/Dummy/Driver,ffd",
+    "original_path": "$/Cdev/Seven/!SerialDev/Modules/Dummy/Driver",
+    "filetype": "ffd",
+    "load": "fffffd45",
+    "exec": "86982aec",
+    "attributes": 3,
+    "size": 500,
+    "sha256": "38e8b14ae7dd73d41164f052ebd3506ff8194be60744acf464383fee27f71354"
+  },
+  {
+    "file": "!SerialDev/Modules/SP_Dual/Driver,ffd",
+    "original_path": "$/Cdev/Seven/!SerialDev/Modules/SP_Dual/Driver",
+    "filetype": "ffd",
+    "load": "fffffd47",
+    "exec": "49fefced",
+    "attributes": 3,
+    "size": 1108,
+    "sha256": "a85a95c32f4e882b5b57ed06fa4443964cb2743638361f25fe5ebec0724f5cbf"
+  },
+  {
+    "file": "!SerialDev/Modules/SP_DualPC/Driver,ffd",
+    "original_path": "$/Cdev/Seven/!SerialDev/Modules/SP_DualPC/Driver",
+    "filetype": "ffd",
+    "load": "fffffd47",
+    "exec": "49fefcfb",
+    "attributes": 3,
+    "size": 1108,
+    "sha256": "6cbc2ddc796f1324a7dbd6c35ee8dfafd5a3c917dbb257a36ab0ca8b1444d163"
+  },
+  {
+    "file": "BlockSpec.txt",
+    "original_path": "$/Cdev/Seven/Driver/spec/BlockSpec",
+    "filetype": "fff",
+    "load": "ffffff47",
+    "exec": "c98699ee",
+    "attributes": 3,
+    "size": 19576,
+    "sha256": "f3c6b1e38255865493ef45548fef6f52a5b61c89517d0c710cc4477362211fff"
+  },
+  {
+    "file": "docs/Changes.txt",
+    "original_path": "$/Cdev/Seven/Driver/Changes",
+    "filetype": "fff",
+    "load": "ffffff46",
+    "exec": "d5f16c62",
+    "attributes": 3,
+    "size": 3498,
+    "sha256": "1f8349a0c6e379dcad193bb851ea828daff41a7e6e5a43c4620db8b2092b7919"
+  },
+  {
+    "file": "docs/DriverNrs.txt",
+    "original_path": "$/Cdev/Seven/Driver/DriverNrs",
+    "filetype": "fff",
+    "load": "ffffff46",
+    "exec": "617cb40d",
+    "attributes": 3,
+    "size": 375,
+    "sha256": "e9299ea8038eadbdbacb89b7bbfb8725032242e096248f2303c5767c8bdf76a6"
+  },
+  {
+    "file": "examples/c/driver,fff",
+    "original_path": "$/Cdev/Seven/Driver/spec/c/driver",
+    "filetype": "fff",
+    "load": "ffffff45",
+    "exec": "838a8ad2",
+    "attributes": 3,
+    "size": 2807,
+    "sha256": "4ce1fbad127fe7a02328bee67e4feaddfb93e9a13d5d75fc35ade65d56604c4b"
+  },
+  {
+    "file": "examples/h/driver,fff",
+    "original_path": "$/Cdev/Seven/Driver/spec/h/driver",
+    "filetype": "fff",
+    "load": "ffffff44",
+    "exec": "58edd6cf",
+    "attributes": 3,
+    "size": 2454,
+    "sha256": "815b7d16e40450dcac84af99aa6ee51bebeb49ee2af80d0168da3a9fe9e8a956"
+  },
+  {
+    "file": "examples/h/example,fff",
+    "original_path": "$/Cdev/Seven/Driver/spec/h/example",
+    "filetype": "fff",
+    "load": "ffffff44",
+    "exec": "5f42a169",
+    "attributes": 3,
+    "size": 962,
+    "sha256": "40cc3492255d6fe1c837822f1b0ac65258cba6c3331ee7e7b02e738a2d67459d"
+  },
+  {
+    "file": "examples/Example,ffb",
+    "original_path": "$/Cdev/Seven/Driver/spec/Example",
+    "filetype": "ffb",
+    "load": "fffffb45",
+    "exec": "187633a4",
+    "attributes": 3,
+    "size": 1352,
+    "sha256": "95a12b57b57ce9f0ab861170a3701d0aac7aaf9787055bf82d93b0123b264c9e"
+  },
+  {
+    "file": "SerialModules/!Serial0,ffa",
+    "original_path": "$/Projects/Serial/!Serial0",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6dde8c",
+    "attributes": 3,
+    "size": 4668,
+    "sha256": "b0158d143b86e4effde306c1fdc0dec1da484aef269d38a6371f8d4597ab8c2d"
+  },
+  {
+    "file": "SerialModules/!Serial1,ffa",
+    "original_path": "$/Projects/Serial/!Serial1",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddeb3",
+    "attributes": 3,
+    "size": 4676,
+    "sha256": "2829e8f8265663e99631da391de9681a87fa3df2f002b4449de8d6783854a59f"
+  },
+  {
+    "file": "SerialModules/!Serial2,ffa",
+    "original_path": "$/Projects/Serial/!Serial2",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddedf",
+    "attributes": 3,
+    "size": 5048,
+    "sha256": "559f5d2025a1d715d45e484133b59ed6a97f10bff361416de3c6be1fd12c38a3"
+  },
+  {
+    "file": "SerialModules/!Serial3,ffa",
+    "original_path": "$/Projects/Serial/!Serial3",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddf09",
+    "attributes": 3,
+    "size": 5032,
+    "sha256": "1ece427c6de7c19fcaa63e8e68099fa823bc41b590639338a3b8fa8eec3a9ab3"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss1_Slot0,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss1_Slot0",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6dde6c",
+    "attributes": 3,
+    "size": 4612,
+    "sha256": "91760cea259cf97be7478048327054e0404d720408c683ae199bd52f147341e4"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss1_Slot1,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss1_Slot1",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6dde73",
+    "attributes": 3,
+    "size": 4612,
+    "sha256": "0dd392cfb9907ddefbe26b77f72329c054dafdbaf916080ec9841c7f425e8e65"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss1_Slot2,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss1_Slot2",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6dde7c",
+    "attributes": 3,
+    "size": 4612,
+    "sha256": "e74739f1e7ab3a647f897bb79c8a10ad17388f7b48201394e9a159ed1fb4f7ed"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss1_Slot3,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss1_Slot3",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6dde83",
+    "attributes": 3,
+    "size": 4612,
+    "sha256": "f58d0a7610fd13c75e5fb926e071c02ed8156c00106a61fd980a245552326d4e"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss2_Slot0,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss2_Slot0",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6dde94",
+    "attributes": 3,
+    "size": 4620,
+    "sha256": "f360ce7850a129d43674c7338b857de57b9eb9247b53bd30014f5af924ed07d1"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss2_Slot1,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss2_Slot1",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6dde9b",
+    "attributes": 3,
+    "size": 4620,
+    "sha256": "cbed191166625883de540cc6ef5c5a575270a63d52e960f2a38142175cd811ce"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss2_Slot2,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss2_Slot2",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddea2",
+    "attributes": 3,
+    "size": 4620,
+    "sha256": "b39ce64f904938b8f6b5e0d09afc7013a0348b33ba47b69fab6ab1d685e56446"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss2_Slot3,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss2_Slot3",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddeab",
+    "attributes": 3,
+    "size": 4620,
+    "sha256": "e4f5399062983b6f6ba410ae91317cf5c70b4ab78fbc937d3002a3df1c82bbf9"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss3_Slot0,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss3_Slot0",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddebd",
+    "attributes": 3,
+    "size": 4996,
+    "sha256": "ca5ac8265ec1e4451a0010319f35d827f5ea044aa20133a910c7e38a28d1fd6d"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss3_Slot1,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss3_Slot1",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddec5",
+    "attributes": 3,
+    "size": 4996,
+    "sha256": "e9f8604a24d7486909f2e4922c8e689a7a616ac7c2583ffc6083e815fb4cc77c"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss3_Slot2,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss3_Slot2",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddece",
+    "attributes": 3,
+    "size": 4996,
+    "sha256": "8b9c550f562156d31fad0fef2034e2d67b15baa5fc3827b96a16116a4136f951"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss3_Slot3,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss3_Slot3",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6dded6",
+    "attributes": 3,
+    "size": 4996,
+    "sha256": "20c7f8fc189be038524fef43940aa9c30b8145ccf86732c316f38796ece80b52"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss4_Slot0,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss4_Slot0",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddee7",
+    "attributes": 3,
+    "size": 4980,
+    "sha256": "501dbbb1d076c02f454dc2c6e5e7a49b552505a2b7dd38e4903add4b8bbb12e4"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss4_Slot1,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss4_Slot1",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddef0",
+    "attributes": 3,
+    "size": 4980,
+    "sha256": "b6d333de30e98e978cb0aafda110d872ab142f558be007aed1ea5f2c7999d9ac"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss4_Slot2,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss4_Slot2",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddef8",
+    "attributes": 3,
+    "size": 4980,
+    "sha256": "ad136bbcfcc0fe78ae99f7faef3564bc7fb4f138fb40f0f0bfa7e9effb86df6e"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Iss4_Slot3,ffa",
+    "original_path": "$/Projects/Serial/Hardcoded/Iss4_Slot3",
+    "filetype": "ffa",
+    "load": "fffffa48",
+    "exec": "3a6ddf00",
+    "attributes": 3,
+    "size": 4980,
+    "sha256": "c1fa7fff26058b88cc9a213b750c6c59496aee12da720191fd43dcac228299f4"
+  },
+  {
+    "file": "SerialModules/Hardcoded/Notes,fff",
+    "original_path": "$/Projects/Serial/Hardcoded/Notes",
+    "filetype": "fff",
+    "load": "ffffff47",
+    "exec": "ceaa0631",
+    "attributes": 3,
+    "size": 755,
+    "sha256": "5a8ec0baf69e014a688d1818f964b3c0d88179662e6f8facdb7ef73becba54a9"
+  }
+]

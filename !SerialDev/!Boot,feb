@@ -1,0 +1,2 @@
+IconSprites <Obey$Dir>.!Sprites
+if "<SerialDev$Path>" = "" then Set SerialDev$Path <Obey$Dir>.

@@ -1,0 +1,91 @@
+/*                  _____________________________________________
+                  [>                                             <]
+Project           [> ARCterm VII                                 <]
+Author            [> Hugo Fiennes                                <]
+Date started      [> 05-March-1990                               <]
+                  [>                                             <]
+Module name       [> Driver loading                              <]
+Current version   [> 00.04                                       <]
+Version date      [> 09-December-1992                            <]
+State             [> Unfinished                                  <]
+                  [>                                             <]
+                  [>    This source is COPYRIGHT © 1992 by       <]
+                  [>      Hugo Fiennes of The Serial Port        <]
+                  [>_____________________________________________<]
+*/
+
+#include <stdio.h>
+#include <string.h>
+#include "driver.h"
+#include "os.h"
+
+int  (*driver)(int,...);
+int  *driver_speedtable,driver_flags,driver_version,driver_noofspeeds;
+char *driver_info,*driver_creator;
+drivers_block drivers[16];
+
+extern int driver_block[];
+
+void driver_init()
+  {
+  os_gbpbstr r; char drivername[20],temp[60];
+  int nd=0;
+  FILE *drvcheck;
+
+  /* Build table of availiable drivers */
+  /* Scan directory */
+  r.action=9;
+  r.file_handle=(int)"<SerialDev$Path>Modules";
+  r.data_addr=drivername;
+  r.seq_point=0; r.buf_len=20;
+  r.wild_fld=NULL;
+
+  do
+    {
+    r.number=1; os_gbpb(&r);
+    if (r.number)
+      {
+      /* Got filename, check driver */
+      sprintf(temp,"<SerialDev$Path>Modules.%s.Driver",drivername);
+      if ((drvcheck=fopen(temp,"rb"))!=NULL)
+        {
+        strcpy(drivers[nd].file,drivername);
+        fseek(drvcheck,0x80,SEEK_SET);
+        fread(drivers[nd].info,1,32,drvcheck);
+        fseek(drvcheck,0xc8,SEEK_SET);
+        fread(&drivers[nd++].number,1,4,drvcheck);
+        fclose(drvcheck);
+        }
+      }
+    }
+  while(r.seq_point>=0);
+
+  /* Terminate list */
+  drivers[nd].info[0]=0;
+  }
+
+void *driver_load(char *drivername)
+  {
+  FILE *drv; long len; char temp[60];
+
+  sprintf(temp,"<SerialDev$Path>Modules.%s.Driver",drivername);
+  if ((drv=fopen(temp,"rb"))==NULL) return(NULL);
+  fseek(drv,0,SEEK_END);
+  len=ftell(drv);
+  fseek(drv,0,SEEK_SET);
+  fread(driver_block,1,len,drv);
+  fclose(drv);
+
+  /* NOTE! Should really call initialise entry before checking ANY of the below */
+  driver_flags=driver_block[49];
+  driver_version=driver_block[48];
+  driver_speedtable=&driver_block[64];
+  driver_info=(char*)&driver_block[32];
+  driver_creator=(char*)&driver_block[40];
+
+  driver_noofspeeds=0;
+  while(driver_speedtable[driver_noofspeeds++]);
+  driver_noofspeeds--;
+
+  return(driver_block);
+  }
