@@ -23,13 +23,16 @@ Seven/
     Internal                   BASIC originals
     Dummy
     SP_Dual
+    TelnetB
     spec/!SerialDev/Modules/... historical secondary destinations
 Serial/
   Serial                       BASIC original
   Hardcoded/                   slot-specific module output directory
 ```
 
-The ARCterm paths are output directories only, not complete applications. In the transferred `Seven` directory, run the staged `!SerialDev` once to set `SerialDev$Path` to that staged copy. Then set the current directory to `Seven.Driver`, start BASIC and build each source with `LOAD "Internal"` followed by `RUN`; repeat for `Dummy` and `SP_Dual`. Internal and SP_Dual each generate both wiring variants. In particular, running `SP_Dual` also writes `!SerialDev.Modules.SP_DualPC.Driver`; no separate source or build invocation is needed for SP_DualPC. Running these programs overwrites the output drivers in the staged tree.
+The ARCterm paths are output directories only, not complete applications. In the transferred `Seven` directory, run the staged `!SerialDev` once to set `SerialDev$Path` to that staged copy. Then set the current directory to `Seven.Driver`, start BASIC and build each source with `LOAD "Internal"` followed by `RUN`; repeat for `Dummy`, `SP_Dual` and `TelnetB`. Internal and SP_Dual each generate both wiring variants. In particular, running `SP_Dual` also writes `!SerialDev.Modules.SP_DualPC.Driver`; no separate source or build invocation is needed for SP_DualPC. Running these programs overwrites the output drivers in the staged tree.
+
+`TelnetB` writes `!SerialDev.Modules.Telnet.Driver` and a copy under `Driver.spec.!SerialDev`. Its runtime dependency is Acorn `!Telnet` (TIP); the driver is not a standalone TCP/IP stack.
 
 For the hardware module, use the staged `Serial` directory as the current directory. In BASIC, `LOAD "Serial"` and `RUN`. It saves `!SerialN` modules and `Hardcoded.IssN_SlotN` variants, setting their filetype to Module.
 

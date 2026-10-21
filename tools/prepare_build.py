@@ -12,11 +12,11 @@ seven = out / 'Seven'
 shutil.copytree(ROOT / '!SerialDev', seven / '!SerialDev')
 driver = seven / 'Driver'
 driver.mkdir()
-for name in ('Internal', 'Dummy', 'SP_Dual'):
+for name in ('Internal', 'Dummy', 'SP_Dual', 'TelnetB'):
     shutil.copy2(ROOT / (name + ',ffb'), driver / (name + ',ffb'))
 for target in (driver / 'spec' / '!SerialDev', seven / '!Arcterm',
                seven / 'DistribA' / '!Arcterm'):
-    for name in ('Internal', 'InternalPC', 'Dummy', 'SP_Dual', 'SP_DualPC'):
+    for name in ('Internal', 'InternalPC', 'Dummy', 'SP_Dual', 'SP_DualPC', 'Telnet'):
         (target / 'Modules' / name).mkdir(parents=True)
 serial = out / 'Serial'
 (serial / 'Hardcoded').mkdir(parents=True)

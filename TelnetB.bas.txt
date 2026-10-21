@@ -1,0 +1,531 @@
+10REM >Telnet
+20*|
+30*| Alternative block driver specification
+40*|
+50*| Acorn Telnet (TIP Interface)
+60*|
+70*| Version 1.00 16-May-1993 Hugo Fiennes
+80*|
+90DIM code 8192
+100
+110date$=MID$(TIME$,5,11):z$=CHR$0
+120FORI%=0TO8192STEP4:code!I%=0:NEXT
+130
+140InsV=&14
+150RemV=&15
+160CnpV=&16
+170
+180V=1<<28
+190C=1<<29
+200Z=1<<30
+210N=1<<31
+220
+230driver_number       = 5
+240
+250flag_morethanone    = &00000001
+260flag_splitrates     = &00000002
+270flag_hardwarefifo   = &00000004
+280flag_controlbreak   = &00000008
+290flag_requirespoll   = &00000010
+300flag_supportsblock  = &00000040
+310
+320telnet_swi = &615C0
+330
+340FORpass=0TO2STEP2
+350P%=code
+360[OPT pass
+370.entry
+380      cmp     r0,#((endoftable-table)/4)
+390      addcc   pc,pc,r0,lsl#2
+400      mov     pc,r14
+410
+420.table
+430      bal     put_byte
+440      bal     get_byte
+450      bal     put_block
+460      bal     get_block
+470      bal     check_tx
+480      bal     check_rx
+490      bal     flush_tx
+500      bal     flush_rx
+510      bal     control_lines
+520      bal     read_modem_control
+530      bal     read_rx_errors
+540      bal     send_break
+550      bal     examine_byte
+560      bal     tx_speed
+570      bal     rx_speed
+580      bal     wordformat
+590      bal     flowcontrol
+600      bal     initialise
+610      bal     closedown
+620      bal     poll
+630.endoftable
+640
+650      FNcheck_and_set(&80)
+660.driverinfo
+670      equs    "Acorn Telnet"+z$
+680
+690      FNcheck_and_set(&A0)
+700.manufacturerinfo
+710      equs    "The Serial Port"+z$
+720
+730      FNcheck_and_set(&C0)
+740.version
+750      equd    &00010000         ; v1.00
+760.flags
+770      equd    flag_requirespoll
+780.drivernumber
+790      equd    driver_number<<8
+800
+810      FNcheck_and_set(&100)
+820.speeds
+830      equd    19200
+840      equd        0
+850
+860      FNcheck_and_set(&180)
+870;--- Put byte routine ---------------------------------------------------
+880.put_byte
+890      mov     r0,r2
+900
+910      ldr     r1,state
+920      cmp     r1,#1            ; Enter address
+930      bne     pb_2
+940
+950      stmfd   r13!,{r14}
+960      cmp     r0,#127
+970      moveq   r0,#8
+980
+990      cmp     r0,#32
+1000      blt     ia_1
+1010
+1020      ldrb    r2,address_p
+1030      cmp     r2,#31
+1040      movge   r0,#0
+1050      ldmgefd r13!,{pc}
+1060
+1070      adr     r1,address
+1080      strb    r0,[r1,r2]
+1090      add     r2,r2,#1
+1100      strb    r2,address_p
+1110
+1120      bl      sendbyte
+1130      mov     r0,#0
+1140      ldmfd   r13!,{pc}
+1150
+1160.ia_1
+1170      cmp     r0,#10
+1180      cmpne   r0,#13
+1190      bne     ia_2
+1200
+1210      mov     r0,#13
+1220      bl      sendbyte
+1230      mov     r0,#10
+1240      bl      sendbyte
+1250
+1260      adr     r1,address
+1270      ldrb    r2,address_p
+1280      mov     r0,#0
+1290      strb    r0,[r1,r2]   ; Terminate string
+1300
+1310      cmp     r2,#0
+1320      moveq   r1,#0
+1330      movne   r1,#2
+1340      str     r1,state
+1350      ldmfd   r13!,{pc}
+1360
+1370.ia_2
+1380      cmp     r0,#8
+1390      movne   r0,#0
+1400      ldmnefd r13!,{pc}
+1410
+1420      ldrb    r0,address_p
+1430      cmp     r0,#0
+1440      ldmeqfd r13!,{pc}
+1450
+1460      sub     r0,r0,#1
+1470      strb    r0,address_p
+1480
+1490      mov     r0,#8
+1500      bl      sendbyte
+1510      mov     r0,#32
+1520      bl      sendbyte
+1530      mov     r0,#8
+1540      bl      sendbyte
+1550
+1560      mov     r0,#0
+1570      ldmfd   r13!,{pc}
+1580
+1590.pb_2
+1600      cmp     r1,#3
+1610      bne     pb_exit
+1620
+1630      stmfd   r13!,{r4-r5}
+1640      ; Connected - send data
+1650      strb    r0,opbuff
+1660      ldr     r0,telnet_handle
+1670      mov     r1,#0
+1680      mov     r2,#0
+1690      adr     r3,opbuff
+1700      mov     r4,#1
+1710      mov     r5,#0
+1720      swi     telnet_swi+5  ; Send data
+1730      ldmfd   r13!,{r4-r5}
+1740
+1750.pb_exit
+1760      mov     r0,#0
+1770      mov     pc,r14
+1780
+1790.opbuff
+1800      equd    0
+1810
+1820;--- Get byte routine ---------------------------------------------------
+1830.get_byte
+1840      ldrb    r0,rx_inuse
+1850      cmp     r0,#0
+1860      mvneq   r0,#0
+1870      moveq   pc,r14
+1880
+1890      sub     r0,r0,#1
+1900      strb    r0,rx_inuse
+1910
+1920      adr     r1,rx_buffer
+1930      ldrb    r2,rx_tail
+1940      ldrb    r0,[r1,r2]
+1950      add     r2,r2,#1
+1960      strb    r2,rx_tail
+1970      mov     pc,r14
+1980
+1990;--- Put block ----------------------------------------------------------
+2000.put_block
+2010      mov     pc,r14
+2020
+2030;--- Get block ----------------------------------------------------------
+2040.get_block
+2050      mov     pc,r14
+2060
+2070;--- Check TX buffer ----------------------------------------------------
+2080.check_tx
+2090      mov     r0,#1
+2100      mov     pc,r14
+2110
+2120;--- Check RX buffer ----------------------------------------------------
+2130.check_rx
+2140      ldrb    r0,rx_inuse
+2150      mov     pc,r14
+2160
+2170;--- Flush TX buffer ----------------------------------------------------
+2180.flush_tx
+2190      mov     pc,r14
+2200
+2210;--- Flush RX buffer ----------------------------------------------------
+2220.flush_rx
+2230      mov     r0,#0
+2240      strb    r0,rx_head
+2250      strb    r0,rx_tail
+2260      strb    r0,rx_inuse
+2270      mov     pc,r14
+2280
+2290;--- Control lines ------------------------------------------------------
+2300.control_lines
+2310      cmp     r2,#0
+2320      blt     clread
+2330      ldr     r1,clstate
+2340      str     r2,clstate
+2350
+2360      tst     r2,#1
+2370      bne     clread
+2380      tst     r1,#1
+2390      beq     clread
+2400
+2410      ; high->low transition!
+2420      ldr     r0,state
+2430      cmp     r0,#3
+2440      bne     cl_not3
+2450
+2460      ldr     r0,telnet_handle
+2470      swi     telnet_swi+4
+2480
+2490      ldr     r0,telnet_handle
+2500      swi     telnet_swi+1
+2510
+2520      mov     r0,#0
+2530      str     r0,telnet_handle
+2540
+2550.cl_not3
+2560      mov     r0,#0
+2570      strb    r0,rx_head
+2580      strb    r0,rx_tail
+2590      strb    r0,rx_inuse
+2600
+2610      str     r0,state
+2620
+2630.clread
+2640      ldr     r0,clstate
+2650      mov     pc,r14
+2660
+2670.clstate
+2680      equd    0
+2690
+2700;--- Read modem control lines -------------------------------------------
+2710.read_modem_control
+2720      ldr     r0,state
+2730      cmp     r0,#3
+2740      moveq   r0,#%1011 ; DCD set if we're connected
+2750      movne   r0,#%0011 ; ... or otherwise
+2760      mov     pc,r14
+2770
+2780;--- Read RX errors -----------------------------------------------------
+2790.read_rx_errors
+2800      mov     r0,#0
+2810      mov     pc,r14
+2820
+2830;--- Send break ---------------------------------------------------------
+2840.send_break
+2850      mov     pc,r14
+2860
+2870;--- Examine byte -------------------------------------------------------
+2880.examine_byte
+2890      mvn     r0,#0
+2900      mov     pc,r14
+2910
+2920;--- Set speed ----------------------------------------------------------
+2930.tx_speed
+2940.rx_speed
+2950      mov     r0,#0
+2960      mov     pc,r14
+2970
+2980;--- Set word format ----------------------------------------------------
+2990.wordformat
+3000      mov     r0,#0
+3010      mov     pc,r14
+3020
+3030;--- Set flow control ---------------------------------------------------
+3040.flowcontrol
+3050      mov     pc,r14
+3060
+3070;--- Initialise driver --------------------------------------------------
+3080.initialise
+3090      stmfd   r13!,{r14}
+3100
+3110      ldr     r1,telnet_id
+3120      adr     r2,telnet
+3130      swi     "XOS_ServiceCall"
+3140      cmp     r1,#0
+3150      beq     init_1
+3160
+3170      adr     r0,initialise_notelnet
+3180      ldmfd   r13!,{pc}
+3190
+3200.init_1
+3210      mov     r0,#6
+3220      mov     r3,#16
+3230      swi     "XOS_Module"
+3240      str     r2,rma
+3250
+3260      mov     r0,#0
+3270      ldmfd   r13!,{pc}
+3280
+3290.rma           equd     0
+3300.telnet_id     equd     &41582
+3310.telnet_handle equd     0
+3320.telnet        equs     "Telnet"+CHR$0
+3330
+3340.initialise_welcome
+3350      equs     CHR$13+CHR$10
+3360      equs     "Acorn Telnet Protocol Interface"+CHR$13+CHR$10
+3370      equs     "(c) 1993 The Serial Port --- BETA TEST ---"+CHR$13+CHR$10
+3380      equs     CHR$10+"Enter address: "+CHR$0
+3390
+3400.initialise_notelnet
+3410      equs     "!Telnet not loaded"+CHR$0
+3420      align
+3430
+3440;--- Close down driver --------------------------------------------------
+3450.closedown
+3460      mov     r0,#7
+3470      ldr     r2,rma
+3480      cmp     r2,#0
+3490      swine   "XOS_Module"
+3500
+3510      ldr     r0,state
+3520      cmp     r0,#3
+3530      movne   pc,r14
+3540
+3550      ldr     r0,telnet_handle
+3560      swi     telnet_swi+4
+3570
+3580      ldr     r0,telnet_handle
+3590      swi     telnet_swi+1
+3600
+3610      mov     pc,r14
+3620
+3630.poll
+3640      stmfd   r13!,{r14}
+3650
+3660      ldr     r0,state
+3670      cmp     r0,#0       ; Send welcome?
+3680      bne     poll_2
+3690
+3700      adr     r0,initialise_welcome
+3710      bl      sendstring
+3720
+3730      mov     r0,#1
+3740      str     r0,state
+3750
+3760      mov     r0,#0
+3770      strb    r0,address_p
+3780
+3790      ldmfd   r13!,{pc}
+3800
+3810.poll_2
+3820      cmp     r0,#2
+3830      bne     poll_3
+3840
+3850      swi     "OS_ReadMonotonicTime"
+3860      adr     r1,termtype
+3870      swi     telnet_swi
+3880      str     r0,telnet_handle
+3890
+3900      ldr     r1,rma
+3910      adr     r3,address
+3920      swi     telnet_swi+3; Try connection
+3930
+3940      and     r3,r3,#3
+3950      cmp     r3,#3       ; Connected?
+3960      bne     poll_2a
+3970
+3980      adr     r0,noconnect
+3990      bl      sendstring
+4000
+4010      mov     r0,#0
+4020      str     r0,state
+4030      ldmfd   r13!,{pc}
+4040
+4050.poll_2a
+4060      adr     r0,connect
+4070      bl      sendstring
+4080
+4090      mov     r0,#3
+4100      str     r0,state
+4110      ldmfd   r13!,{pc}
+4120
+4130.poll_3
+4140      cmp     r0,#3
+4150      bne     poll_4
+4160
+4170      ; Check connection state
+4180      ldr     r0,telnet_handle
+4190      swi     telnet_swi+9
+4200      and     r3,r3,#3
+4210      cmp     r3,#3
+4220      beq     poll_remoteclear
+4230      cmp     r3,#0
+4240      beq     poll_remoteclear
+4250
+4260      stmfd   r13!,{r4}
+4270
+4280.polllp3
+4290      ; Space in RX buffer for data?
+4300      ldrb    r0,rx_inuse
+4310      cmp     r0,#255
+4320      beq     eox
+4330
+4340      ldr     r0,telnet_handle
+4350      adr     r1,inpb
+4360      mov     r2,#1
+4370      swi     telnet_swi+6
+4380      cmp     r2,#0
+4390      beq     eox
+4400
+4410      ldrb    r0,inpb
+4420      bl      sendbyte
+4430
+4440      bal     polllp3
+4450
+4460.eox
+4470      ldmfd   r13!,{r4,pc}
+4480
+4490.poll_remoteclear
+4500      ldr     r0,telnet_handle
+4510      swi     telnet_swi+4
+4520
+4530      ldr     r0,telnet_handle
+4540      swi     telnet_swi+1
+4550
+4560      mov     r0,#0
+4570      str     r0,telnet_handle
+4580
+4590      adr     r0,disconnect
+4600      bl      sendstring
+4610
+4620      mov     r0,#0
+4630      str     r0,state
+4640      ldmfd   r13!,{pc}
+4650
+4660.poll_4
+4670      ldmfd   r13!,{pc}
+4680
+4690
+4700.state
+4710      equd    0
+4720.inpb
+4730      equd    0
+4740
+4750.rx_head
+4760      equb    0
+4770.rx_tail
+4780      equb    0
+4790.rx_inuse
+4800      equb    0
+4810
+4820      align
+4830.address
+4840      equd 0:equd 0:equd 0:equd 0
+4850      equd 0:equd 0:equd 0:equd 0
+4860
+4870.address_p
+4880      equb    0
+4890
+4900.termtype
+4910      equs    "vt102"+CHR$0
+4920.connect
+4930      equs    "Connected"+CHR$13+CHR$10+CHR$0
+4940.disconnect
+4950      equs    "Disconnected by remote"+CHR$13+CHR$10+CHR$0
+4960.noconnect
+4970      equs    "Connect failed"+CHR$13+CHR$10+CHR$0
+4980      align
+4990.rx_buffer
+5000]:P%+=256:[OPTpass
+5010
+5020.sendbyte
+5030      ldrb    r1,rx_inuse
+5040      cmp     r1,#255
+5050      moveq   pc,r14
+5060      add     r1,r1,#1
+5070      strb    r1,rx_inuse
+5080
+5090      adr     r1,rx_buffer
+5100      ldrb    r2,rx_head
+5110      strb    r0,[r1,r2]
+5120      add     r2,r2,#1
+5130      strb    r2,rx_head
+5140      mov     pc,r14
+5150
+5160.sendstring
+5170      stmfd   r13!,{r14}
+5180      mov     r3,r0
+5190.ssloop
+5200      ldrb    r0,[r3],#1
+5210      cmp     r0,#0
+5220      ldmeqfd r13!,{pc}
+5230      bl      sendbyte
+5240      bal     ssloop
+5250]
+5260NEXT
+5270SYS"OS_File",10,"SerialDev:Modules.Telnet.Driver",&FFD,,code,P%
+5280SYS"OS_File",10,"spec.!serialdev.Modules.Telnet.Driver",&FFD,,code,P%
+5290PRINT"Length=";P%-code
+5300END
+5310DEFFNcheck_and_set(A%):IF (P%-code)>A% ERROR 1,"Block &"+STR$~A%+" exceeded"::=0ELSEP%=code+A%:=0

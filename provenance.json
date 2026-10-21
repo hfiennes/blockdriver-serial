@@ -398,5 +398,25 @@
     "attributes": 3,
     "size": 755,
     "sha256": "5a8ec0baf69e014a688d1818f964b3c0d88179662e6f8facdb7ef73becba54a9"
+  },
+  {
+    "file": "TelnetB,ffb",
+    "original_path": "$/Cdev/Seven/Driver/TelnetB",
+    "filetype": "ffb",
+    "load": "fffffb44",
+    "exec": "e5875897",
+    "attributes": 3,
+    "size": 12044,
+    "sha256": "fe6685b7c30998372a0f655b07a93e2a020f8d4ea4f3a75fa6f9a98e3fd93a69"
+  },
+  {
+    "file": "!SerialDev/Modules/Telnet/Driver,ffd",
+    "original_path": "$/Cdev/Seven/!SerialDev/Modules/Telnet/Driver",
+    "filetype": "ffd",
+    "load": "fffffd45",
+    "exec": "838a98db",
+    "attributes": 3,
+    "size": 1856,
+    "sha256": "eef3f6e6f25d992fecfd0a2a8f8d7db4d208cbb673ee07a660232cb2b9431080"
   }
 ]

@@ -8,14 +8,15 @@ Original RISC OS serial driver sources by Hugo Fiennes, recovered from an Acorn 
 | [Dummy](Dummy.bas.txt) | Null serial device | 1.02, 16 August 1994 |
 | [SP_Dual](SP_Dual.bas.txt) | Block-driver interface to Serial Port / Atomwide 1/2/3-port cards, Acorn cable wiring | 1.14, 9 January 1997 |
 | [SP_DualPC](SP_Dual.bas.txt#L35) | The same cards with PC cable wiring; built by the second pass of the shared SP_Dual source | 1.14, 9 January 1997 |
+| [Telnet](TelnetB.bas.txt) | Acorn Telnet Protocol Interface (TIP) block driver | 1.00, 16 May 1993 |
 | [Serial](Serial.bas.txt) | Underlying serial-card hardware module, including Atomwide issue 1/2 cards | 0.55, 10 August 1998 |
 
 The BASIC programs contain inline ARM assembler and save their own assembled outputs. `Serial` supplies the `SPSerial_*` SWIs used by `SP_Dual`; it is a separate hardware module, rather than another block driver.
 
 ## Contents
 
-- `Internal,ffb`, `Dummy,ffb`, `SP_Dual,ffb`, `Serial,ffb`: byte-for-byte original BASIC files. The accompanying `.bas.txt` files are listings for reading on GitHub.
-- [`!SerialDev/`](!SerialDev/): original `!Boot`, `!Run` and `!Sprites`, with recovered binaries for Internal, InternalPC, Dummy, SP_Dual and SP_DualPC. Other drivers from the original application have been omitted.
+- `Internal,ffb`, `Dummy,ffb`, `SP_Dual,ffb`, `TelnetB,ffb`, `Serial,ffb`: byte-for-byte original BASIC files. The accompanying `.bas.txt` files are listings for reading on GitHub.
+- [`!SerialDev/`](!SerialDev/): original `!Boot`, `!Run` and `!Sprites`, with recovered binaries for Internal, InternalPC, Dummy, SP_Dual, SP_DualPC and Telnet. Other drivers from the original application have been omitted.
 - [`BlockSpec.txt`](BlockSpec.txt): original block-driver specification, revision 12, 11 June 1996.
 - [`docs/Changes.txt`](docs/Changes.txt) and [`docs/DriverNrs.txt`](docs/DriverNrs.txt): original revision history and driver-number assignments.
 - [`examples/`](examples/): original BASIC client example and C interface/header files. The C example references an external `os.h`; that dependency is not included.
@@ -30,9 +31,13 @@ The PC cable variant is included at [`!SerialDev/Modules/SP_DualPC/Driver,ffd`](
 
 The second assembly pass sets `initbitset=%00101011` and the title to `1/2/3 port serial (PC cable)`, then saves the SP_DualPC driver. The Acorn cable pass uses `%10101011`. Both report the same underlying device number, allowing applications using different cable variants to recognise the same hardware.
 
+## Telnet
+
+The original source is named [`TelnetB,ffb`](TelnetB,ffb), with a readable [TelnetB.bas.txt](TelnetB.bas.txt) listing. It builds [`!SerialDev/Modules/Telnet/Driver,ffd`](!SerialDev/Modules/Telnet/Driver,ffd). This is the Acorn Telnet Protocol Interface (TIP) driver and requires the original `!Telnet` software at runtime; that external dependency is not included. Its source and recovered binary both contain a beta-test banner. The recovered file named `Telnet` was an archive, so the BASIC source retains its original `TelnetB` name here.
+
 ## Binary provenance
 
-The block-driver binaries were recovered from the adjacent `$.Cdev.Seven.!SerialDev` application. Their embedded versions agree with the constants emitted by the source: Internal/InternalPC 1.19, Dummy 1.02, SP_Dual/SP_DualPC 1.14. Internal's source comment says 1.20, but its actual version word still says 1.19; both have been preserved unchanged. Matching version words do not establish a byte-for-byte source/binary match.
+The block-driver binaries were recovered from the adjacent `$.Cdev.Seven.!SerialDev` application. Their embedded versions agree with the constants emitted by the source: Internal/InternalPC 1.19, Dummy 1.02, SP_Dual/SP_DualPC 1.14, Telnet 1.00. Internal's source comment says 1.20, but its actual version word still says 1.19; both have been preserved unchanged. Matching version words do not establish a byte-for-byte source/binary match.
 
 The recovered `!Serial0`–`!Serial3` modules identify themselves as **0.55 (03 Apr 1998)**, while `Serial` explicitly sets its build date to **10 Aug 1998**. These are historical binaries, not verified builds of the included source. `!Serial2` identifies itself as the Atomwide issue 1/2 variant. No source has been rebuilt or tested on hardware as part of this recovery.
 
